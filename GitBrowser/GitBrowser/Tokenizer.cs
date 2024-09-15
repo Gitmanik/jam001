@@ -18,7 +18,7 @@ public class Token
 
 	public override string ToString()
 	{
-		return $"TOKEN: {Type} [{Data}],{string.Join(", ", Attributes.ToList().ConvertAll(x => $"{x.Key}:{x.Value}"))}";
+		return $"TOKEN: {Type} [{Data}], Closing:{ClosingTag},{string.Join(", ", Attributes.ToList().ConvertAll(x => $"{x.Key}:{x.Value}"))}";
 	}
 }
 

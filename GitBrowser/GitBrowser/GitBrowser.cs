@@ -14,6 +14,8 @@ public class Program
 		var builder = new TreeBuilder(tokens);
 		var domtree = builder.BuildTree();
 
+		File.WriteAllText("domtree.txt", domtree.ToString());
+
 		Console.ReadLine();
 		return;
 	}

@@ -1,6 +1,4 @@
-﻿using System.Runtime.ConstrainedExecution;
-
-namespace GitBrowser
+﻿namespace GitBrowser
 {
 	public class TreeBuilder
 	{
@@ -14,37 +12,64 @@ namespace GitBrowser
 
 		public DOMElement BuildTree()
 		{
+			Console.WriteLine("BuildTree");
 			if (Tokens == null)
 				throw new ArgumentNullException("Tokens");
 
-			DOMElement root = new() { Name = "HTML", Value = null };
+			DOMElement root = new() { Name = "HTML" };
 
-			root.Children.Add(BuildBranch());
+			try
+			{
+				root.Children.Add(BuildBranch());
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				Console.WriteLine(root);
+				//Console.WriteLine($"Next Tokens:\n{string.Join("", Tokens.ToList())}");
+			}
 
-			Console.WriteLine("BUILDTRE DONE");
+			Console.WriteLine("BuildTree DONE");
 			Console.WriteLine(root.PrettyPrint());
 
 			return root;
 		}
 
-		private DOMElement BuildBranch()
+		private DOMElement BuildBranch(int ctr = 0)
 		{
 			Token root = Get();
-			DOMElement el = new DOMElement() { Name = root.Data, Value = null, Attributes = root.Attributes };
+			DOMElement el = new DOMElement() { Name = root.Data, Attributes = root.Attributes };
+			Console.WriteLine($"BuildBranch {ctr}: {el}");
 
 			while (Tokens.Count > 0)
 			{
 				if (Peek().Type == Token.TokenType.COMMENT)
+				{
+					Get();
 					continue;
+				}
 
 				if (Peek().Type == Token.TokenType.TAG)
 				{
 					if (Peek().Data == root.Data && Peek().ClosingTag)
 					{
+						Console.WriteLine($"Closing {el.Name}");
 						Get();
 						break;
 					}
-					el.Children.Add(BuildBranch());
+					if (Peek().ClosingTag)
+					{
+						Console.WriteLine($"WARN: {Peek().Data} is closing but root is {root.Data}");
+						Get();
+						break;
+					}
+					el.Children.Add(BuildBranch(ctr+1));
+					continue;
+				}
+
+				if (Peek().Type == Token.TokenType.LITERAL)
+				{
+					el.Children.Add(new DOMElement { Name = "RAW_TEXT", Attributes = new Dictionary<string, string>() { ["value"] = Get().Data } });
 				}
 
 			}
