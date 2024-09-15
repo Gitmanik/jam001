@@ -11,6 +11,8 @@ public class Token
 
 	public Dictionary<string, string> Attributes = new();
 
+	public bool ClosingTag = false;
+
 	public required string Data;
 	public required TokenType Type;
 
@@ -106,8 +108,9 @@ public class Tokenizer
 				continue;
 			}
 
-			if (Peek() == '/') //TODO: HANDLE CLOSING
+			if (Peek() == '/')
 			{
+				tk.ClosingTag = true;
 				Get();
 				continue;
 			}
