@@ -11,6 +11,9 @@ public class Program
 		var tokenizer = new Tokenizer(html);
 		var tokens = tokenizer.Tokenize();
 
+		var builder = new TreeBuilder(tokens);
+		var domtree = builder.BuildTree();
+
 		Console.ReadLine();
 		return;
 	}
